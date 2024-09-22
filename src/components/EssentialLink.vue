@@ -1,48 +1,46 @@
 <template>
-  <q-item
-    clickable
-    tag="a"
-    target="_blank"
-    :href="props.link"
-  >
-    <q-item-section
-      v-if="props.icon"
-      avatar
-    >
+  <q-item clickable tag="a" @click="navigateTo">
+    <q-item-section v-if="props.icon" avatar>
       <q-icon :name="props.icon" />
     </q-item-section>
 
     <q-item-section>
       <q-item-label>{{ props.title }}</q-item-label>
-      <q-item-label caption>{{ props.caption }}</q-item-label>
     </q-item-section>
   </q-item>
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
+
 defineOptions({
-  name: 'EssentialLink'
-})
+  name: "EssentialLink",
+});
+
+const router = useRouter();
 
 const props = defineProps({
   title: {
     type: String,
-    required: true
-  },
-
-  caption: {
-    type: String,
-    default: ''
+    required: true,
   },
 
   link: {
     type: String,
-    default: '#'
+    default: "#",
   },
 
   icon: {
     type: String,
-    default: ''
+    default: "",
+  },
+});
+
+const navigateTo = () => {
+  if (props.link.startsWith("http")) {
+    window.open(props.link, "_blank");
+  } else {
+    router.push({ name: props.link });
   }
-})
+};
 </script>
