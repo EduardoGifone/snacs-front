@@ -1,26 +1,48 @@
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
 // Middleware para parsear JSON
 app.use(express.json());
 
-const trustedDomains = [
+// Configuración de CORS
+app.use(
+  cors({
+    origin: "http://localhost:9000", // Asegúrate de que esta sea la URL de tu frontend
+  })
+);
+
+const dominiosConfiables = [
   "rpp.pe",
   "www.bbc.com",
   "edition.cnn.com",
-  "reuters.com",
   "news.un.org",
   "www.nbcnews.com",
+  "www.adinelsa.com.pe",
+  "www.bn.com.pe",
+  "www.gob.pe",
+  "serviciosconida.com",
+  "www.atd-quartmonde.org",
+  "www.atd-cuartomundo.org",
+  "european-union.europa.eu",
+  "www.tv5monde.com",
+  "www.info.gouv.fr",
+  "www.gouv.bj",
+  "www.usa.gov",
+  "elcomercio.pe",
+  "larepublica.pe",
+  "peru21.pe",
+  "gestion.pe",
 ];
 
 // Función para verificar la confiabilidad de una URL
 const verificarUrl = (url) => {
   const urlObject = new URL(url);
   const domain = urlObject.hostname;
-  return trustedDomains.includes(domain);
+  return { esConfiable: dominiosConfiables.includes(domain), fuente: domain };
 };
 
 // Endpoint para verificar la confiabilidad de una URL
@@ -32,10 +54,12 @@ app.post("/verificar-url", async (req, res) => {
   }
 
   try {
-    const isTrusted = verificarUrl(url);
-    return res.json({ url, confiable: isTrusted });
+    const { esConfiable, fuente } = verificarUrl(url);
+    return res.json({ url, confiable: esConfiable, fuente });
   } catch (error) {
-    return res.status(500).json({ error: "Error al verificar la URL" });
+    return res
+      .status(500)
+      .json({ error: "Por favor ingrese una URL/Link válida" });
   }
 });
 
@@ -80,13 +104,16 @@ app.post("/verificar-titulo", async (req, res) => {
     const links = await buscarTitulo(titulo);
     const resultados = links.map((link) => ({
       url: link,
-      confiable: verificarUrl(link),
+      confiable: verificarUrl(link).esConfiable,
+      fuente: verificarUrl(link).fuente,
     }));
 
     return res.json({ titulo, resultados });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Error al verificar el título" });
+    return res
+      .status(500)
+      .json({ error: "Por favor ingrese un título válido" });
   }
 });
 

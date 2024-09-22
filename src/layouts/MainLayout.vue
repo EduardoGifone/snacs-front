@@ -73,7 +73,7 @@ const linksList = [
     link: "UrlVerify",
   },
   {
-    title: "Verificar Titulo",
+    title: "Verificar Título",
     icon: "spellcheck",
     link: "TitleVerify",
   },

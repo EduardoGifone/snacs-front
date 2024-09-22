@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center container">
-    <div class="column content-center" v-if="type === '1'">
+    <div class="column content-center" v-show="type === '1'">
       <img
         alt="Snac's logo"
         src="~assets/snacs-tv.png"
@@ -17,7 +17,7 @@
       />
     </div>
 
-    <div class="column content-center q-px-md" v-if="type === '2'">
+    <div class="column content-center q-px-md" v-show="type === '2'">
       <img
         alt="Snac's logo"
         src="~assets/snacs-ant1.png"
@@ -32,7 +32,7 @@
       />
     </div>
 
-    <div class="column content-center q-px-md" v-if="type === '3'">
+    <div class="column content-center q-px-md" v-show="type === '3'">
       <img
         alt="Snac's logo"
         src="~assets/snacs-ant2.png"
@@ -42,7 +42,7 @@
         <q-btn color="primary" label="Verificar URL" :to="`/verificar/url`" />
         <q-btn
           color="secondary"
-          label="Verificar Titulo"
+          label="Verificar Título"
           :to="`/verificar/titulo`"
         />
       </div>
