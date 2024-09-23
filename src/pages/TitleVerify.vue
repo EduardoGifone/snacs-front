@@ -20,7 +20,7 @@
         <h6 class="q-mb-xs text-grey">Información relacionada a</h6>
         <h5 class="q-mb-md q-mt-none">{{ _titulo }}</h5>
         <p>
-          Se muestra informacion no confiable, pero puede ser util si desa
+          Se muestra información no confiable, pero puede ser util si desea
           buscar al respecto
         </p>
       </div>
