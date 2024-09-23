@@ -46,29 +46,40 @@ defineOptions({
 
 const $q = useQuasar();
 
+// Variables
 const titulo = ref();
 const _titulo = ref();
 const data = ref([]);
 const respuesta = ref(false);
 
+// Funciones
 function onSubmit() {
   $q.loading.show();
+
   const obj = {
     titulo: titulo.value,
   };
 
+  // Envio de titulo al endpoint del backend
   api
     .post("verificar-titulo", obj)
     .then((response) => {
       respuesta.value = true;
+
+      // Obtenemos la informacion y la guardamos
       data.value = response.data.resultados;
       _titulo.value = response.data.titulo;
       data.value.sort((a, b) => b.confiable - a.confiable);
       titulo.value = "";
+
       $q.loading.hide();
     })
+
+    // En caso de error se muestra una notificacion
     .catch((error) => {
       $q.loading.hide();
+
+      // Mensaje en caso que falle el internet o la conexion
       if (error.code == "ERR_NETWORK") {
         $q.notify({
           type: "negative",
@@ -77,6 +88,7 @@ function onSubmit() {
         });
       }
 
+      // Mensaje de error que nos manda el backend
       if (error.response?.data?.error) {
         $q.notify({
           type: "warning",

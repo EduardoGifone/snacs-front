@@ -1,3 +1,4 @@
+// Importamos librerias necesarias
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -8,7 +9,7 @@ const port = 3000;
 // Middleware para parsear JSON
 app.use(express.json());
 
-// Configuración de CORS
+// Configuración de CORS - Whitelist
 app.use(
   cors({
     origin: "http://localhost:9000", // Asegúrate de que esta sea la URL de tu frontend
@@ -42,6 +43,7 @@ const dominiosConfiables = [
 const verificarUrl = (url) => {
   const urlObject = new URL(url);
   const domain = urlObject.hostname;
+  // Buscamos que este en la lista de los dominios confiables
   return { esConfiable: dominiosConfiables.includes(domain), fuente: domain };
 };
 
@@ -49,23 +51,27 @@ const verificarUrl = (url) => {
 app.post("/verificar-url", async (req, res) => {
   const { url } = req.body;
 
+  // Aseguramos que la url no sea vacia
   if (!url) {
     return res.status(400).json({ error: "URL es requerida" });
   }
 
+  // En caso de ser confiable devuelve verdadero
   try {
     const { esConfiable, fuente } = verificarUrl(url);
     return res.json({ url, confiable: esConfiable, fuente });
   } catch (error) {
+    // En caso que la url sea invalida
     return res
       .status(500)
       .json({ error: "Por favor ingrese una URL/Link válida" });
   }
 });
 
-// Función para buscar el turlítulo en Google
+// Función para buscar el título en Google
 const buscarTitulo = async (titulo) => {
   const query = encodeURIComponent(titulo);
+  // Buscamos el titulo
   const url = `https://www.google.com/search?q=${query}`;
 
   const response = await axios.get(url, {
@@ -77,6 +83,7 @@ const buscarTitulo = async (titulo) => {
   const $ = cheerio.load(response.data);
   const links = [];
 
+  // Guardamos los links que esten relacionados con el titulo
   $("h3").each((index, element) => {
     const link = $(element).closest("a").attr("href");
     if (link) {
@@ -96,10 +103,12 @@ const buscarTitulo = async (titulo) => {
 app.post("/verificar-titulo", async (req, res) => {
   const { titulo } = req.body;
 
+  // Aseguramos que el titulo no sea vacio
   if (!titulo) {
     return res.status(400).json({ error: "Título es requerido" });
   }
 
+  // Devolvemos verdadero en los links que son confiables
   try {
     const links = await buscarTitulo(titulo);
     const resultados = links.map((link) => ({
@@ -110,6 +119,7 @@ app.post("/verificar-titulo", async (req, res) => {
 
     return res.json({ titulo, resultados });
   } catch (error) {
+    // En caso que el titulo sea invalido
     console.log(error);
     return res
       .status(500)
@@ -117,6 +127,7 @@ app.post("/verificar-titulo", async (req, res) => {
   }
 });
 
+// Aperturamos el backend
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });

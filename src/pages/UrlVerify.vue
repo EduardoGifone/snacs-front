@@ -34,6 +34,7 @@ defineOptions({
 
 const $q = useQuasar();
 
+// Variables
 const url = ref("");
 const data = ref({
   url: "",
@@ -42,22 +43,32 @@ const data = ref({
 });
 const respuesta = ref(false);
 
+// Funciones
 function onSubmit() {
   $q.loading.show();
+
   const obj = {
     url: url.value,
   };
 
+  // Envio de url al endpoint del backend
   api
     .post("verificar-url", obj)
     .then((response) => {
       respuesta.value = true;
+
+      // Obtenemos la informacion y la guardamos
       Object.assign(data.value, response.data);
       url.value = "";
+
       $q.loading.hide();
     })
+
+    // En Caso de error se muestra una notificacion
     .catch((error) => {
       $q.loading.hide();
+
+      // Mensaje en caso que falle el internet o la conexion
       if (error.code == "ERR_NETWORK") {
         $q.notify({
           type: "negative",
@@ -66,6 +77,7 @@ function onSubmit() {
         });
       }
 
+      // Mensaje de error que nos manda el backend
       if (error.response?.data?.error) {
         $q.notify({
           type: "warning",
